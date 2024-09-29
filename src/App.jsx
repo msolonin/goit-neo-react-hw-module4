@@ -7,6 +7,7 @@ import {fetchPhotos} from "./js/unsplash-api.js";
 import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn.jsx";
 import ImageModal from "./components/ImageModal/ImageModal.jsx";
 import Loader from "./components/Loader/Loader.jsx";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage.jsx";
 
 function App() {
     const [photos, setPhotos] = useState([]);
@@ -15,6 +16,7 @@ function App() {
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [backendError, setBackendError] = useState('');
 
     const onSubmit = async (submitValue) => {
         try {
@@ -23,7 +25,8 @@ function App() {
             setPhotos(newPhotos);
             setQueryString(submitValue);
         } catch (error) {
-            toast.error("Error fetching photos: " + error);
+            setBackendError("Error fetching photos: " + error);
+            // toast.error("Error fetching photos: " + error);
         } finally {
             setLoading(false);
         }
@@ -36,7 +39,8 @@ function App() {
             setPhotos([...photos, ...newPhotos]); // Set state with fetched photos
             setPage(page + 1); // Increase page number
         } catch (error) {
-            toast.error("Error fetching photos: " + error);
+            // toast.error("Error fetching photos: " + error);
+            setBackendError("Error fetching photos: " + error);
         } finally {
             setLoading(false);
         }
@@ -60,6 +64,7 @@ function App() {
             ) : (
                 <p>Nothing to display.</p>
             )}
+            {backendError !== '' && <ErrorMessage backendError={backendError} />}
             {loading && <Loader />}
             {photos.length > 0 && <LoadMoreBtn onLoadMore={onLoadMore} />}
             <ImageModal isOpen={isModalOpen} onRequestClose={closeModal} image={selectedImage} />
